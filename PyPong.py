@@ -41,7 +41,7 @@ player2y=200
 player2move=0
 ballx=350
 bally=200
-balldirection=0
+balldirection=90
 
 while done==False:
     # This limits the while loop to a max of 10 times per second.
