@@ -13,20 +13,6 @@ import math
 import pygame
 #from pygame import math
 
-def bounceHorizontal(direction):
-    direction=(int)(direction)%360
-    if direction<90:
-        direction=360-direction
-    elif direction<180:
-        direction=270-(direction-90)
-    elif direction<270:
-        direction=180-(direction-180)
-    else:
-        direction=360-direction
-    return direction
-# Initialize the game engine
-pygame.init()
-
 # Define the colors we will use in RGB format
 black = [  0,  0,  0]
 white = [255,255,255]
@@ -39,6 +25,66 @@ pi=3.141592653
 # Set the height and width of the screen
 width=700
 height=400
+
+def bounceHorizontal(direction):
+    direction=(int)(direction)%360
+    if direction<90:
+        direction=360-direction
+    elif direction<180:
+        direction=270-(direction-90)
+    elif direction<270:
+        direction=180-(direction-180)
+    else:
+        direction=360-direction
+    return direction
+
+class Ball:
+    def __init__(self,x,y,degrees):
+        self.position=[x,y]
+        self.direction=degrees
+        self.radius=10
+        self.velocity=1.25
+    def top(self):
+        return self.position[0]-self.radius
+    def bottom(self):
+        return self.position[0]+self.radius
+    def left(self):
+        return self.position[1]-self.radius
+    def right(self):
+        return self.position[1]+self.radius
+    def update(self):
+        self.position[0]+=self.velocity*math.cos(self.direction*pi/180)
+        self.position[1]-=self.velocity*math.sin(self.direction*pi/180)
+    def draw(self,screen):
+        pygame.draw.circle(screen,black,[(int)(self.position[0]),(int)(self.position[1])],self.radius,0)
+
+class Paddle:
+    def __init__(self,x,y):
+        self.position=[x,y]
+        self.width=15
+        self.height=150
+        self.activity=0
+    def top(self):
+        return self.position[1]
+    def bottom(self):
+        return self.position[1]+self.height
+    def left(self):
+        return self.position[0]
+    def right(self):
+        return self.position[0]+self.width
+    def update(self,event):
+        if event.type == pygame.KEYUP and event.key == pygame.K_q:
+            self.activity=0
+        elif event.type == pygame.KEYUP and event.key == pygame.K_a:
+            self.activity=0
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+            self.activity=1
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_a:
+            self.activity=-1
+
+# Initialize the game engine
+pygame.init()
+
 size=[width,height]
 screen=pygame.display.set_mode(size)
  
@@ -48,28 +94,31 @@ pygame.display.set_caption("PyPong")
 done=False
 clock=pygame.time.Clock()
 
+# [x,y]
+#ball=Ball(width/2,height/2)
+ball=[width/2,height/2]
+ballDirection=30
+ballRadius=10
+ballSpeed=1.25
+#
 paddleLength=100
 paddleWidth=20
 
+#player1=Paddle(40,width/2)
+#player2=Paddle(650,width/2)
 player1column=40
 player2column=650
-
-player1top=(height/2)
-player2top=(height/2)-paddleLength
+#
+player1top=(height/2)+ballRadius+1
+player2top=(height/2)-paddleLength-ballRadius
 
 player1movement=0
 player2movement=0
 
-# [x,y]
-ball=[width/2.0,height/2.0]
-ballDirection=45
-ballRadius=15
-ballSpeed=1.25
-
 while done==False:
     # This limits the while loop to a max of 10 times per second.
     # Leave this out and we will use all CPU we can.
-    clock.tick(30)
+    clock.tick(45)
      
     for event in pygame.event.get(): # User did something
         # If user clicked close
@@ -103,7 +152,6 @@ while done==False:
     elif player2movement < 0:
         player2top += 5
 
-
     # All drawing code happens after the for loop and but
     # inside the main while done==False loop.
      
@@ -120,6 +168,8 @@ while done==False:
 #    y_offset=0
 #    while y_offset < 100:
 #        pygame.draw.line(screen,red,[0,10+y_offset],[100,110+y_offset],5)
+    pygame.draw.line(screen,red,[0,ball[1]],[width,ball[1]],1)
+    pygame.draw.line(screen,red,[ball[0],0],[ball[0],height],1)
 #        y_offset=y_offset+10
 
     # Draw a rectangle
@@ -137,30 +187,39 @@ while done==False:
 
 
     if ball[0]>=player1column and ball[0]<=(player1column+paddleWidth):
-        if ball[1]>player1top and ball[1]<(player1top+paddleLength):
+        if (ball[1]+ballRadius)>=player1top and ball[1]<=(player1top+paddleLength):
             ballDirection+=180
-            ballSpeed+=ballSpeed*0.20
-    if ball[0]>=player2column and ball[0]<=(player2column+paddleWidth):
-        print ball
-        if ball[1]>player2top and ball[1]<(player2top+paddleLength):
+#            ballSpeed+=ballSpeed*0.20
+            ballSpeed=min((ballSpeed+ballSpeed*0.20),paddleWidth)
+            print ball,ballSpeed,paddleWidth
+            ball[0]=player1column+paddleWidth
+    if (ball[0]+2*ballRadius)>=player2column and ball[0]<=(player2column+paddleWidth):
+        if (ball[1]-ballRadius)>=player2top and ball[1]<=(player2top+paddleLength):
             ballDirection+=180
-            ballSpeed+=ballSpeed*0.20
+            ballSpeed=min((ballSpeed+ballSpeed*0.20),paddleWidth)
+            print ball,ballSpeed,paddleWidth
+            ball[0]=player2column-2*ballRadius
     ballDirection%=360
-    if ball[1]<0:
+    if (ball[1]-ballRadius)<0:
         ballDirection=bounceHorizontal(ballDirection)
-        ball[1]=0
-    elif ball[1]>height:
+        ball[1]=ballRadius
+    elif (ball[1]+ballRadius)>height:
         ballDirection=bounceHorizontal(ballDirection)
-        ball[1]=height
+        ball[1]=height-ballRadius
+    if ball[0]<(0-ballRadius):
+        ball=[width/2,height/2]
+        ballDirection=180
+        ballSpeed=1.0
+    elif ball[0]>(ballRadius+width):
+        ball=[width/2,height/2]
+        ballDirection=0
+        ballSpeed=1.0
 
-    ball[0]+=(ballSpeed*math.cos(ballDirection*pi/180)) 
-    ball[1]+=(ballSpeed*math.sin(ballDirection*pi/180))
-    pygame.draw.circle(screen,
-                       black,
+    ball[0]+=ballSpeed*math.cos(ballDirection*pi/180)
+    ball[1]-=ballSpeed*math.sin(ballDirection*pi/180)
+    pygame.draw.circle(screen,black,
                        [(int)(ball[0]),(int)(ball[1])],
-                       ballRadius,
-                       0
-    )
+                       ballRadius,0)
 
 
     # This draws a triangle using the polygon command
