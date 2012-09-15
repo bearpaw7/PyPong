@@ -12,6 +12,7 @@ Created on Aug 30, 2012
 import math
 import pygame
 from random import randrange
+import os
 
 # Define the colors we will use in RGB format
 black = [  0,  0,  0]
@@ -229,6 +230,7 @@ class PyPong:
         pygame.quit ()
 
 if __name__ == '__main__':
+    print os.getcwd()
     game=PyPong()
     game.play()
 
