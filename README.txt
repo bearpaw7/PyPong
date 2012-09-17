@@ -20,7 +20,7 @@ Mac OS X Install using Homebrew:
   3. PyGame  
     Homepage: http://www.pygame.org  
     Install command for required libraries:  
-      brew install sdl sdl_image sdl_mixer sdl_ttf smpeg portmidi  
+      brew install sdl sdl_image sdl_mixer sdl_ttf smpeg portmidi hg 
     Install command for PyGame:  
       /usr/local/share/python/pip install hg+http://bitbucket.org/pygame/pygame  
       
