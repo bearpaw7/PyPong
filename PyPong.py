@@ -26,11 +26,12 @@ width=700
 height=400
 
 class Ball:
+    base_velocity = 3.00
     def __init__(self,x,y,degrees):
         self.position=[x,y]
         self.direction=degrees
         self.radius=9
-        self.velocity=1.25
+        self.velocity=self.base_velocity
         pygame.mixer.init()
         self.redsound=pygame.mixer.Sound("red.ogg")
         self.bluesound=pygame.mixer.Sound("blue.ogg")
@@ -63,6 +64,7 @@ class Ball:
 
     def bounceHorizontal(self):
         self.direction=(int)(self.direction)%360
+        self.velocity=self.velocity-self.velocity*0.25
         if self.direction<90:
             self.direction=360-self.direction
         elif self.direction<180:
@@ -88,13 +90,13 @@ class Ball:
         if self.right()<0:
             self.position=[width/2,height/2]
             self.direction=0
-            self.velocity=1.25
+            self.velocity=self.base_velocity
             paddle2.points+=1
             self.bluesound.play()
         elif self.left()>width:
             self.position=[width/2,height/2]
             self.direction=180
-            self.velocity=1.25
+            self.velocity=self.base_velocity
             paddle1.points+=1
             self.redsound.play()
         self.collide(paddle1)
