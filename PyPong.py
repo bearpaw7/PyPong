@@ -15,15 +15,15 @@ from random import randrange
 import os
 
 # Define the colors we will use in RGB format
-black = [  0,  0,  0]
-white = [255,255,255]
-blue =  [  0,  0,255]
-red =   [255,  0,  0]
+black = (  0,  0,  0)
+white = (255,255,255)
+blue =  (  0,  0,255)
+red =   (255,  0,  0)
 
-pi=3.141592653
+pi = math.pi
 
-width=700
-height=400
+width = 700
+height = 400
 
 class Ball:
     base_velocity = 3.00
