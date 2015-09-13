@@ -33,9 +33,9 @@ class Ball:
         self.radius=9
         self.velocity=self.base_velocity
         pygame.mixer.init()
-        self.redsound=pygame.mixer.Sound("red.ogg")
-        self.bluesound=pygame.mixer.Sound("blue.ogg")
-        self.tink=pygame.mixer.Sound("tink.ogg")
+        self.redsound=pygame.mixer.Sound("../sound/red.ogg")
+        self.bluesound=pygame.mixer.Sound("../sound/blue.ogg")
+        self.tink=pygame.mixer.Sound("../sound/tink.ogg")
 
     def top(self):
         return self.position[1]-self.radius
